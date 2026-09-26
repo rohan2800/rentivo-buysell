@@ -1,0 +1,3 @@
+package rentivo_backend.config;
+import org.springframework.context.annotation.*; import org.springframework.web.servlet.config.annotation.*; import org.springframework.beans.factory.annotation.Value;
+@Configuration public class WebConfig implements WebMvcConfigurer { @Value("${rentivo.upload.dir:./uploads}") String uploadDir; @Override public void addResourceHandlers(ResourceHandlerRegistry r){String p=uploadDir.replace("\\","/"); if(!p.endsWith("/"))p+="/"; r.addResourceHandler("/uploads/**").addResourceLocations("file:"+p); } @Override public void addCorsMappings(CorsRegistry r){r.addMapping("/**").allowedOrigins("*").allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS").allowedHeaders("*");} }

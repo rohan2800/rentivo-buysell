@@ -1,0 +1,4 @@
+package rentivo_backend.entity;
+import jakarta.persistence.*; import java.time.LocalDateTime;
+@Entity @Table(name="otp_challenges")
+public class OtpChallenge { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id; @Column(nullable=false,length=15) private String phone; @Column(nullable=false,length=10) private String code; @Column(nullable=false) private LocalDateTime expiresAt; @Column(nullable=false) private boolean used=false; public Long getId(){return id;} public String getPhone(){return phone;} public String getCode(){return code;} public LocalDateTime getExpiresAt(){return expiresAt;} public boolean isUsed(){return used;} public void setId(Long v){id=v;} public void setPhone(String v){phone=v;} public void setCode(String v){code=v;} public void setExpiresAt(LocalDateTime v){expiresAt=v;} public void setUsed(boolean v){used=v;} }

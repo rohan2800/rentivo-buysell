@@ -1,0 +1,2 @@
+package rentivo_backend.repository; import org.springframework.data.jpa.repository.JpaRepository; import rentivo_backend.entity.UserSubscription; import java.util.*;
+public interface UserSubscriptionRepository extends JpaRepository<UserSubscription,Long>{ Optional<UserSubscription> findTopByUserIdAndStatusOrderByEndAtDesc(Long userId,UserSubscription.Status status); long countByStatus(UserSubscription.Status status); }

@@ -1,0 +1,11 @@
+package rentivo_backend.controller;
+import jakarta.validation.Valid; import org.springframework.http.*; import org.springframework.security.core.Authentication; import org.springframework.web.bind.annotation.*; import org.springframework.web.multipart.MultipartFile; import rentivo_backend.dto.ListingDtos.*; import rentivo_backend.entity.*; import rentivo_backend.repository.*; import rentivo_backend.service.*; import java.util.*;
+@RestController @RequestMapping("/api/listings") public class ListingController {private final ListingService service;private final ListingRepository repo;private final StorageService storage;private final UserRepository users; public ListingController(ListingService s,ListingRepository r,StorageService st,UserRepository u){service=s;repo=r;storage=st;users=u;}
+ private Long uid(Authentication a){return (Long)a.getPrincipal();}
+ @PostMapping public Listing create(@Valid @RequestBody CreateListingRequest r,Authentication a){return service.create(r,uid(a));}
+ @GetMapping("/mine") public Object mine(Authentication a){return service.mine(uid(a));}
+ @PutMapping("/{id}") public Listing update(@PathVariable Long id,@Valid @RequestBody CreateListingRequest r,Authentication a){return service.update(uid(a),id,r);}
+ @DeleteMapping("/{id}") public ResponseEntity<Void> delete(@PathVariable Long id,Authentication a){service.delete(uid(a),id);return ResponseEntity.noContent().build();}
+ @PostMapping("/{id}/images") public Object image(@PathVariable Long id,@RequestParam MultipartFile file,Authentication a){Listing l=repo.findById(id).orElseThrow(()->new IllegalArgumentException("Listing not found"));if(!l.getOwner().getId().equals(uid(a)))throw new SecurityException("Only owner can upload images");ListingImage i=new ListingImage();i.setListing(l);i.setFileName(file.getOriginalFilename()==null?"image":file.getOriginalFilename());i.setFileUrl(storage.save(file,"listings"));i.setSortOrder(l.getImages().size());l.getImages().add(i);repo.save(l);return Map.of("url",i.getFileUrl(),"imageId",i.getId());}
+ @GetMapping("/approved") public Object approved(){return repo.findByStatusOrderByCreatedAtDesc(Listing.Status.APPROVED).stream().map(l->new ListingSummary(l.getId(),l.getTitle(),l.getCategory().getName(),l.getListingType(),l.getPrice(),l.getPriceUnit(),l.getCity(),l.getLocality(),true,l.getStatus().name())).toList();}
+}
