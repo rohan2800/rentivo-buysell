@@ -1,3 +1,0 @@
-package rentivo_backend.config;
-import jakarta.persistence.EntityNotFoundException; import org.springframework.http.*; import org.springframework.web.bind.annotation.*; import java.util.*;
-@RestControllerAdvice public class RestExceptionHandler { @ExceptionHandler(EntityNotFoundException.class) ResponseEntity<?> notFound(Exception e){return ResponseEntity.status(404).body(Map.of("error",e.getMessage()));} @ExceptionHandler({IllegalStateException.class,SecurityException.class,IllegalArgumentException.class}) ResponseEntity<?> bad(Exception e){return ResponseEntity.badRequest().body(Map.of("error",e.getMessage()));} }

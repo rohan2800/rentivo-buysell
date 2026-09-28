@@ -1,31 +1,69 @@
-# Rentivo Backend — Industry-oriented foundation
+# Rentivo (buysell) Backend
 
-Java 21 + Spring Boot + PostgreSQL + Spring Security + JWT.
+Marketplace backend for Property, Furniture, POP and Hardware listings. Posting is free;
+seeing a seller's phone number needs a paid subscription. Business rules: see
+[BUSINESS_RULES.md](BUSINESS_RULES.md).
 
-## Final business model
-- Posting is free.
-- A verified mobile number is mandatory for every post.
-- The user's verified login phone is the default listing contact.
-- Subscription is only for unlocking owner/provider contact numbers.
-- Admin controls plan price, validity, contact limit, and active/inactive state.
-- A unique listing contact is counted once per subscription; re-opening the same listing does not consume another contact.
-- Expired plans cannot use remaining contacts.
-- Admin approves/rejects listings.
-- Categories and category-specific fields are dynamic.
-- Images are stored locally during development through `StorageService`; an object-storage implementation can be added later without changing listing logic.
+**Stack:** Java 21, Spring Boot 4.1, PostgreSQL 16, Flyway, Spring Security (JWT), Maven.
 
-## Development
-1. Create PostgreSQL database `rentivo`.
-2. Set `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` and a strong `JWT_SECRET` (32+ chars).
-3. Run with IntelliJ or Maven.
-4. Dev OTP is `123456` by default. Do not expose this in production.
-5. Seeded development owner/admin phone: `9999999999`. Login through OTP to receive an ADMIN JWT.
-6. `/api/subscriptions/activate-dev` is only a development activation shortcut. Replace it with a payment-order + webhook flow before production.
+## Run locally
 
-## Important production work before launch
-- Connect a real SMS/OTP provider.
-- Replace development subscription activation with Razorpay/other provider order creation and server-side signature/webhook verification.
-- Move image storage to persistent object storage (S3/R2/Cloudinary/etc.) when deployed.
-- Add rate limiting, audit logs, refresh tokens/device sessions, moderation/reporting, observability, backups, and automated integration tests.
+```bash
+docker compose up -d          # PostgreSQL on :5432
+./mvnw spring-boot:run        # dev profile is the default
+```
 
-# buysell
+The `dev` profile enables a fixed OTP (`123456`, also returned in the API response), a free
+`/api/subscriptions/activate-dev` endpoint, and creates an admin with phone `9999999999`.
+None of these exist in `prod`; the app refuses to start in `prod` if they are on.
+
+> Upgrading from the old version? The schema is now owned by Flyway. Drop the old dev database
+> (`docker compose down -v`) and start fresh.
+
+## Run tests
+
+```bash
+./mvnw test
+```
+
+## Configuration (environment variables)
+
+See [.env.example](.env.example). In `prod`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`,
+`JWT_SECRET` (32+ chars) and `CORS_ALLOWED_ORIGINS` have no defaults and must be set.
+Production also needs an `OtpSender` implementation (SMS provider); without one the app will
+not start.
+
+## Code layout
+
+```
+com.rentivo.backend
+  auth/          OTP login (hashed codes, attempt + rate limits)
+  user/          users, admin user management
+  category/      categories and dynamic fields (fields are deactivated, never deleted)
+  listing/       listings, images, search, moderation
+  subscription/  plans, contact unlock (atomic), expiry job
+  payment/       payment records (gateway integration: Phase 2)
+  media/         image validation + storage abstraction
+  security/      JWT filter, security rules, JSON 401/403
+  admin/         /api/admin/** controllers
+  common/        errors (RFC 7807), paging, phone utils
+  config/        typed properties, startup safety checks
+```
+
+## API summary
+
+| Area | Endpoints |
+|---|---|
+| Auth | `POST /api/auth/send-otp`, `POST /api/auth/verify-otp` |
+| Public | `GET /api/categories`, `GET /api/categories/{id}`, `GET /api/subscriptions/plans`, `GET /api/listings/approved` (paged, filters: `categoryId, city, type, minPrice, maxPrice, q, page, size`), `GET /api/listings/{id}` |
+| Owner | `POST /api/listings`, `GET /api/listings/mine`, `PUT/DELETE /api/listings/{id}`, `POST /api/listings/{id}/images`, `DELETE /api/listings/{id}/images/{imageId}` |
+| Subscriber | `GET /api/subscriptions/status`, `POST /api/subscriptions/contact/{listingId}` |
+| Admin | `/api/admin/dashboard`, `/api/admin/users`, `/api/admin/listings`, `/api/admin/categories`, `/api/admin/subscriptions/plans` |
+
+Errors are `application/problem+json`. Validation errors include an `errors` map.
+
+## Roadmap
+
+Phase 1 (this branch): correctness, security, structure. Phase 2: real SMS OTP, Razorpay
+payments + webhooks, S3 media, refresh tokens, search, reports/audit log. Phase 3: Docker image,
+CI/CD, Terraform/AWS, observability.
