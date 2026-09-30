@@ -1,8 +1,10 @@
+
 package com.rentivo.backend.security;
 
 import com.rentivo.backend.config.RentivoProperties;
 import com.rentivo.backend.user.UserRepository;
 import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -27,7 +29,9 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http, JwtService jwt, UserRepository users,
-                                    JsonErrorHandlers errorHandlers, CorsConfigurationSource cors) throws Exception {
+                                    JsonErrorHandlers errorHandlers,
+                                    @Qualifier("corsConfigurationSource") CorsConfigurationSource cors)
+            throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(c -> c.configurationSource(cors))
