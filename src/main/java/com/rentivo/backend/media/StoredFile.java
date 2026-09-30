@@ -22,7 +22,6 @@ public class StoredFile {
     @Column(nullable = false)
     private int byteSize;
 
-    @Lob
     @Column(nullable = false)
     private byte[] data;
 
