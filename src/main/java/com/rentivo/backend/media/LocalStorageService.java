@@ -15,9 +15,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-/** Disk-backed storage. The default: active unless rentivo.upload.provider=s3. */
+/** Disk-backed storage. Active only when rentivo.upload.provider=local. */
 @Service
-@ConditionalOnProperty(name = "rentivo.upload.provider", havingValue = "local", matchIfMissing = true)
+@ConditionalOnProperty(name = "rentivo.upload.provider", havingValue = "local")
 public class LocalStorageService implements StorageService {
 
     private static final Logger log = LoggerFactory.getLogger(LocalStorageService.class);

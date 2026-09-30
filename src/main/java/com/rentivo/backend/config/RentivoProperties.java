@@ -28,11 +28,12 @@ public record RentivoProperties(
     }
 
     /**
-     * provider selects the active StorageService: "local" (disk, default) or "s3". s3Bucket is
-     * required when provider is "s3"; s3PublicBaseUrl overrides the default virtual-hosted URL
-     * with a CloudFront (or other CDN) domain.
+     * provider selects the active StorageService: "postgres" (default — image bytes in the
+     * database), "local" (disk) or "s3". s3Bucket is required when provider is "s3";
+     * s3PublicBaseUrl overrides the default virtual-hosted URL with a CloudFront (or other CDN)
+     * domain.
      */
-    public record Upload(@DefaultValue("local") String provider,
+    public record Upload(@DefaultValue("postgres") String provider,
                          @DefaultValue("./uploads") String dir,
                          @DefaultValue("10") int maxImagesPerListing,
                          @DefaultValue("10485760") long maxImageBytes,

@@ -88,7 +88,7 @@ public class S3StorageService implements StorageService {
             s3.putObject(PutObjectRequest.builder()
                     .bucket(bucket)
                     .key(key)
-                    .contentType(contentTypeOf(type))
+                    .contentType(type.mimeType())
                     .contentLength((long) bytes.length)
                     .build(), RequestBody.fromBytes(bytes));
         } catch (S3Exception e) {
@@ -113,14 +113,6 @@ public class S3StorageService implements StorageService {
 
     static String buildKey(String folder, ImageType type) {
         return folder + "/" + UUID.randomUUID() + type.extension();
-    }
-
-    static String contentTypeOf(ImageType type) {
-        return switch (type) {
-            case JPEG -> "image/jpeg";
-            case PNG -> "image/png";
-            case WEBP -> "image/webp";
-        };
     }
 
     private static String stripTrailingSlash(String url) {

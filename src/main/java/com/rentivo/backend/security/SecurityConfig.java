@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/uploads/**", "/media/**").permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/categories", "/api/categories/{id:\\d+}",
                                 "/api/subscriptions/plans",
