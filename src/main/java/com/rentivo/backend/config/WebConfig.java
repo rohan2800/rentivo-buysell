@@ -16,9 +16,12 @@ public class WebConfig implements WebMvcConfigurer {
         this.props = props;
     }
 
-    /** Serves locally stored uploads. Replaced by object storage in Phase 2. */
+    /** Serves locally stored uploads. Not needed (or meaningful) when provider=s3. */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        if (!"local".equalsIgnoreCase(props.upload().provider())) {
+            return;
+        }
         Path root = Paths.get(props.upload().dir()).toAbsolutePath().normalize();
         String location = root.toUri().toString();
         if (!location.endsWith("/")) {

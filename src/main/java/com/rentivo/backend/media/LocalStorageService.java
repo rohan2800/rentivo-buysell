@@ -4,6 +4,7 @@ import com.rentivo.backend.common.exception.BadRequestException;
 import com.rentivo.backend.config.RentivoProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,7 +15,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+/** Disk-backed storage. The default: active unless rentivo.upload.provider=s3. */
 @Service
+@ConditionalOnProperty(name = "rentivo.upload.provider", havingValue = "local", matchIfMissing = true)
 public class LocalStorageService implements StorageService {
 
     private static final Logger log = LoggerFactory.getLogger(LocalStorageService.class);

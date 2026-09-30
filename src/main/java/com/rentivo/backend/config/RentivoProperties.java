@@ -27,9 +27,18 @@ public record RentivoProperties(
                       @DefaultValue("5") int maxPerHour) {
     }
 
-    public record Upload(@DefaultValue("./uploads") String dir,
+    /**
+     * provider selects the active StorageService: "local" (disk, default) or "s3". s3Bucket is
+     * required when provider is "s3"; s3PublicBaseUrl overrides the default virtual-hosted URL
+     * with a CloudFront (or other CDN) domain.
+     */
+    public record Upload(@DefaultValue("local") String provider,
+                         @DefaultValue("./uploads") String dir,
                          @DefaultValue("10") int maxImagesPerListing,
-                         @DefaultValue("10485760") long maxImageBytes) {
+                         @DefaultValue("10485760") long maxImageBytes,
+                         String s3Bucket,
+                         @DefaultValue("ap-south-1") String s3Region,
+                         String s3PublicBaseUrl) {
     }
 
     public record Cors(List<String> allowedOrigins) {

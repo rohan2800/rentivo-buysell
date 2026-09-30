@@ -43,12 +43,29 @@ com.rentivo.backend
   listing/       listings, images, search, moderation
   subscription/  plans, contact unlock (atomic), expiry job
   payment/       payment records (gateway integration: Phase 2)
-  media/         image validation + storage abstraction
+  media/         image validation + storage abstraction (local disk or S3)
   security/      JWT filter, security rules, JSON 401/403
   admin/         /api/admin/** controllers
   common/        errors (RFC 7807), paging, phone utils
   config/        typed properties, startup safety checks
 ```
+
+## Media storage
+
+Listing images go through `StorageService`, with two implementations chosen by
+`STORAGE_PROVIDER` (`rentivo.upload.provider`):
+
+- **`local`** (default in `dev`): saved to `UPLOAD_DIR` and served at `/uploads/**`. Fine for a
+  single dev machine; not durable across container restarts or multiple instances.
+- **`s3`** (default in `prod`): uploaded to `S3_BUCKET` in `AWS_REGION` and served from the
+  bucket's virtual-hosted URL, or from `S3_PUBLIC_BASE_URL` if set (point this at a CloudFront
+  distribution in front of the bucket for production).
+
+AWS credentials are never read from application properties — the SDK's default credential chain
+resolves them from the environment (`aws configure` locally) or from an instance/task role in
+AWS. The bucket needs public-read on the objects this app writes (listing photos are meant to be
+public); a minimal IAM policy for the app itself only needs `s3:PutObject`, `s3:GetObject` and
+`s3:DeleteObject` on `arn:aws:s3:::your-bucket/*`.
 
 ## API summary
 
@@ -64,6 +81,6 @@ Errors are `application/problem+json`. Validation errors include an `errors` map
 
 ## Roadmap
 
-Phase 1 (this branch): correctness, security, structure. Phase 2: real SMS OTP, Razorpay
-payments + webhooks, S3 media, refresh tokens, search, reports/audit log. Phase 3: Docker image,
-CI/CD, Terraform/AWS, observability.
+Phase 1: correctness, security, structure (done). Phase 2 (in progress): S3 media (done, this
+branch); real SMS OTP, Razorpay payments + webhooks, refresh tokens, search, reports/audit log
+still to come. Phase 3: Docker image, CI/CD, Terraform/AWS, observability.

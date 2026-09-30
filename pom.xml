@@ -54,6 +54,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- S3 storage backend (media module). Only initialised when rentivo.upload.provider=s3 -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.29.52</version>
+        </dependency>
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
