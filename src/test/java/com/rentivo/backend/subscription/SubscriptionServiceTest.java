@@ -53,6 +53,7 @@ class SubscriptionServiceTest {
     @Mock ListingRepository listings;
     @Mock ContactAccessRepository accesses;
     @Mock PaymentRepository payments;
+    @Mock com.rentivo.backend.notification.NotificationService notifications;
     @Mock TransactionTemplate tx;
 
     private Listing listing;
@@ -76,7 +77,7 @@ class SubscriptionServiceTest {
     private SubscriptionService service(boolean devActivation) {
         RentivoProperties props = new RentivoProperties(null, null, null, null,
                 new RentivoProperties.Subscriptions(devActivation), null);
-        return new SubscriptionService(users, plans, subs, listings, accesses, payments, props, tx,
+        return new SubscriptionService(users, plans, subs, listings, accesses, payments, notifications, props, tx,
                 Clock.fixed(NOW, ZoneOffset.UTC));
     }
 

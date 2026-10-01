@@ -8,6 +8,8 @@ import com.rentivo.backend.config.RentivoProperties;
 import com.rentivo.backend.listing.Listing;
 import com.rentivo.backend.listing.ListingRepository;
 import com.rentivo.backend.listing.ListingStatus;
+import com.rentivo.backend.notification.NotificationService;
+import com.rentivo.backend.notification.NotificationType;
 import com.rentivo.backend.payment.Payment;
 import com.rentivo.backend.payment.PaymentRepository;
 import com.rentivo.backend.payment.PaymentStatus;
@@ -38,6 +40,7 @@ public class SubscriptionService {
     private final ListingRepository listings;
     private final ContactAccessRepository accesses;
     private final PaymentRepository payments;
+    private final NotificationService notifications;
     private final RentivoProperties props;
     private final TransactionTemplate tx;
     private final Clock clock;
@@ -45,13 +48,15 @@ public class SubscriptionService {
     public SubscriptionService(UserRepository users, SubscriptionPlanRepository plans,
                                UserSubscriptionRepository subs, ListingRepository listings,
                                ContactAccessRepository accesses, PaymentRepository payments,
-                               RentivoProperties props, TransactionTemplate tx, Clock clock) {
+                               NotificationService notifications, RentivoProperties props,
+                               TransactionTemplate tx, Clock clock) {
         this.users = users;
         this.plans = plans;
         this.subs = subs;
         this.listings = listings;
         this.accesses = accesses;
         this.payments = payments;
+        this.notifications = notifications;
         this.props = props;
         this.tx = tx;
         this.clock = clock;
@@ -173,6 +178,10 @@ public class SubscriptionService {
         access.setSubscription(subs.getReferenceById(sub.getId()));
         access.setUnlockedAt(now);
         accesses.save(access);
+
+        String buyerName = users.findById(userId).map(User::getName).orElse("A user");
+        notifications.create(listing.getOwner(), NotificationType.CONTACT_UNLOCKED, "Contact unlocked",
+                buyerName + " unlocked your contact for \"" + listing.getTitle() + "\".", listing);
 
         UserSubscription fresh = subs.findById(sub.getId()).orElseThrow();
         return new ContactResponse(true, ownerName, ownerPhone, fresh.getContactsUsed(), remaining(fresh),

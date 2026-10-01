@@ -79,6 +79,7 @@ one is active, so switching later is a config change, not a rewrite.
 | Owner | `POST /api/listings`, `GET /api/listings/mine`, `PUT/DELETE /api/listings/{id}`, `POST /api/listings/{id}/images`, `DELETE /api/listings/{id}/images/{imageId}` |
 | Subscriber | `GET /api/subscriptions/status`, `POST /api/subscriptions/contact/{listingId}` |
 | Favorites | `GET /api/favorites` (paged), `POST /api/favorites/{listingId}`, `DELETE /api/favorites/{listingId}` |
+| Notifications | `GET /api/notifications` (paged), `GET /api/notifications/unread-count`, `PATCH /api/notifications/{id}/read`, `POST /api/notifications/read-all` |
 | Admin | `/api/admin/dashboard`, `/api/admin/users`, `/api/admin/listings`, `/api/admin/categories`, `/api/admin/subscriptions/plans` |
 
 Errors are `application/problem+json`. Validation errors include an `errors` map.

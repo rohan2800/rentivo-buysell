@@ -6,6 +6,8 @@ import com.rentivo.backend.common.exception.NotFoundException;
 import com.rentivo.backend.common.web.PageResponse;
 import com.rentivo.backend.common.web.Paging;
 import com.rentivo.backend.listing.dto.ListingDtos.ListingResponse;
+import com.rentivo.backend.notification.NotificationService;
+import com.rentivo.backend.notification.NotificationType;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -18,10 +20,12 @@ import java.time.Clock;
 public class ListingAdminService {
 
     private final ListingRepository listings;
+    private final NotificationService notifications;
     private final Clock clock;
 
-    public ListingAdminService(ListingRepository listings, Clock clock) {
+    public ListingAdminService(ListingRepository listings, NotificationService notifications, Clock clock) {
         this.listings = listings;
+        this.notifications = notifications;
         this.clock = clock;
     }
 
@@ -50,6 +54,17 @@ public class ListingAdminService {
         l.setStatus(target);
         l.setRejectionReason(target == ListingStatus.REJECTED ? reason.trim() : null);
         l.setUpdatedAt(clock.instant());
+        notifyOwner(l, target);
         return ListingMapper.toResponse(l);
+    }
+
+    private void notifyOwner(Listing l, ListingStatus target) {
+        if (target == ListingStatus.APPROVED) {
+            notifications.create(l.getOwner(), NotificationType.LISTING_APPROVED, "Listing approved",
+                    "Your listing \"" + l.getTitle() + "\" is now live.", l);
+        } else {
+            notifications.create(l.getOwner(), NotificationType.LISTING_REJECTED, "Listing rejected",
+                    "Your listing \"" + l.getTitle() + "\" was rejected: " + l.getRejectionReason(), l);
+        }
     }
 }
