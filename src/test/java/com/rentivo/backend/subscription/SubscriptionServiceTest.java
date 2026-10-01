@@ -76,7 +76,7 @@ class SubscriptionServiceTest {
 
     private SubscriptionService service(boolean devActivation) {
         RentivoProperties props = new RentivoProperties(null, null, null, null,
-                new RentivoProperties.Subscriptions(devActivation), null);
+                new RentivoProperties.Subscriptions(devActivation), null, null);
         return new SubscriptionService(users, plans, subs, listings, accesses, payments, notifications, props, tx,
                 Clock.fixed(NOW, ZoneOffset.UTC));
     }

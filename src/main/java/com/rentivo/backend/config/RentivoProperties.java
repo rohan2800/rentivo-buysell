@@ -12,6 +12,7 @@ public record RentivoProperties(
         @DefaultValue Upload upload,
         @DefaultValue Cors cors,
         @DefaultValue Subscriptions subscriptions,
+        @DefaultValue Listings listings,
         String bootstrapAdminPhone) {
 
     public record Jwt(String secret,
@@ -46,5 +47,9 @@ public record RentivoProperties(
     }
 
     public record Subscriptions(@DefaultValue("false") boolean devActivationEnabled) {
+    }
+
+    /** How long an approved listing stays live before it auto-expires and needs a renewal. */
+    public record Listings(@DefaultValue("30") int validityDays) {
     }
 }

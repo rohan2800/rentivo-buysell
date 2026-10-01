@@ -5,6 +5,7 @@ import com.rentivo.backend.common.exception.ConflictException;
 import com.rentivo.backend.common.exception.NotFoundException;
 import com.rentivo.backend.common.web.PageResponse;
 import com.rentivo.backend.common.web.Paging;
+import com.rentivo.backend.config.RentivoProperties;
 import com.rentivo.backend.listing.dto.ListingDtos.ListingResponse;
 import com.rentivo.backend.notification.NotificationService;
 import com.rentivo.backend.notification.NotificationType;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
+import java.time.temporal.ChronoUnit;
 
 /** Moderation: admins approve or reject; everything else about a listing belongs to its owner. */
 @Service
@@ -21,11 +23,14 @@ public class ListingAdminService {
 
     private final ListingRepository listings;
     private final NotificationService notifications;
+    private final RentivoProperties props;
     private final Clock clock;
 
-    public ListingAdminService(ListingRepository listings, NotificationService notifications, Clock clock) {
+    public ListingAdminService(ListingRepository listings, NotificationService notifications,
+                               RentivoProperties props, Clock clock) {
         this.listings = listings;
         this.notifications = notifications;
+        this.props = props;
         this.clock = clock;
     }
 
@@ -53,6 +58,9 @@ public class ListingAdminService {
         }
         l.setStatus(target);
         l.setRejectionReason(target == ListingStatus.REJECTED ? reason.trim() : null);
+        if (target == ListingStatus.APPROVED) {
+            l.setExpiresAt(clock.instant().plus(props.listings().validityDays(), ChronoUnit.DAYS));
+        }
         l.setUpdatedAt(clock.instant());
         notifyOwner(l, target);
         return ListingMapper.toResponse(l);

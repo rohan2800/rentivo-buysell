@@ -13,6 +13,10 @@
   Rejecting requires a reason, shown to the owner.
 - Only `APPROVED` listings are public. Public views never include the phone number or street address.
 - Images: JPG, PNG or WEBP (checked by file contents), max 10 MB each, max 10 per listing.
+- An approved listing expires `LISTING_VALIDITY_DAYS` (default 30) days after it was approved
+  or last renewed; an hourly job moves it to `EXPIRED` automatically. Owners can renew an
+  approved or expired listing (`POST /api/listings/{id}/renew`) to reset the expiry — renewing
+  an expired one brings it back live immediately, without going through moderation again.
 
 ## Categories
 - Admins define categories and their extra fields (text, number, decimal, yes/no, date, select,

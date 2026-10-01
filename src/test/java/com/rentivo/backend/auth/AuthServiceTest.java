@@ -48,7 +48,7 @@ class AuthServiceTest {
 
     private AuthService service(boolean devMode) {
         RentivoProperties props = new RentivoProperties(null,
-                new RentivoProperties.Otp(devMode, "123456", 5, 3, 60, 5), null, null, null, null);
+                new RentivoProperties.Otp(devMode, "123456", 5, 3, 60, 5), null, null, null, null, null);
         return new AuthService(users, otps, jwt, sender, encoder, props, clock);
     }
 

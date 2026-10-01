@@ -70,6 +70,9 @@ public class Listing {
     @Column(length = 500)
     private String rejectionReason;
 
+    /** Set when the listing becomes APPROVED (first approval or a renewal); null otherwise. */
+    private Instant expiresAt;
+
     @Column(nullable = false)
     private Instant createdAt;
 
@@ -117,6 +120,8 @@ public class Listing {
     public void setStatus(ListingStatus status) { this.status = status; }
     public String getRejectionReason() { return rejectionReason; }
     public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
+    public Instant getExpiresAt() { return expiresAt; }
+    public void setExpiresAt(Instant expiresAt) { this.expiresAt = expiresAt; }
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }

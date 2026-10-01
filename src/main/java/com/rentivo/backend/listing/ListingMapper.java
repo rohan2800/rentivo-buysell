@@ -20,14 +20,14 @@ public final class ListingMapper {
                 l.getListingType(), l.getPrice(), l.getPriceUnit(), l.getDescription(), l.getState(),
                 l.getCity(), l.getLocality(), l.getPincode(), l.getAddress(), l.getLatitude(),
                 l.getLongitude(), l.getContactPhone(), l.getStatus(), l.getRejectionReason(),
-                images(l), fields(l), l.getCreatedAt(), l.getUpdatedAt());
+                images(l), fields(l), l.getExpiresAt(), l.getCreatedAt(), l.getUpdatedAt());
     }
 
     public static PublicListingResponse toPublic(Listing l) {
         return new PublicListingResponse(l.getId(), l.getTitle(), category(l), l.getListingType(),
                 l.getPrice(), l.getPriceUnit(), l.getDescription(), l.getState(), l.getCity(),
                 l.getLocality(), l.getPincode(), l.getLatitude(), l.getLongitude(),
-                images(l), fields(l), true, l.getCreatedAt());
+                images(l), fields(l), true, l.getExpiresAt(), l.getCreatedAt());
     }
 
     public static ListingSummary toSummary(Listing l) {

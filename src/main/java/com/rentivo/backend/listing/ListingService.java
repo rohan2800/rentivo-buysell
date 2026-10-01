@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Clock;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -85,6 +86,19 @@ public class ListingService {
         // Any edit sends the listing back through moderation.
         l.setStatus(ListingStatus.PENDING);
         l.setRejectionReason(null);
+        l.setUpdatedAt(clock.instant());
+        return ListingMapper.toResponse(l);
+    }
+
+    /** Extends an approved listing's expiry, or brings an expired one back live. */
+    @Transactional
+    public ListingResponse renew(Long userId, Long listingId) {
+        Listing l = owned(userId, listingId);
+        if (l.getStatus() != ListingStatus.APPROVED && l.getStatus() != ListingStatus.EXPIRED) {
+            throw new ConflictException("Only approved or expired listings can be renewed");
+        }
+        l.setStatus(ListingStatus.APPROVED);
+        l.setExpiresAt(clock.instant().plus(props.listings().validityDays(), ChronoUnit.DAYS));
         l.setUpdatedAt(clock.instant());
         return ListingMapper.toResponse(l);
     }

@@ -56,7 +56,7 @@ public final class ListingDtos {
                                   String pincode, String address, Double latitude, Double longitude,
                                   String contactPhone, ListingStatus status, String rejectionReason,
                                   List<ImageResponse> images, List<FieldValueResponse> fields,
-                                  Instant createdAt, Instant updatedAt) {
+                                  Instant expiresAt, Instant createdAt, Instant updatedAt) {
     }
 
     /** Public detail: no contact number and no street address. Contact is unlocked via subscription. */
@@ -65,7 +65,7 @@ public final class ListingDtos {
                                         String description, String state, String city, String locality,
                                         String pincode, Double latitude, Double longitude,
                                         List<ImageResponse> images, List<FieldValueResponse> fields,
-                                        boolean contactLocked, Instant createdAt) {
+                                        boolean contactLocked, Instant expiresAt, Instant createdAt) {
     }
 
     public record ListingSummary(Long id, String title, String category, ListingType listingType,

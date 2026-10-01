@@ -82,6 +82,11 @@ public class ListingController {
         service.delete(user.id(), id);
     }
 
+    @PostMapping("/{id}/renew")
+    public ListingResponse renew(@PathVariable Long id, @AuthenticationPrincipal AuthUser user) {
+        return service.renew(user.id(), id);
+    }
+
     @PostMapping("/{id}/images")
     @ResponseStatus(HttpStatus.CREATED)
     public ImageResponse addImage(@PathVariable Long id, @RequestParam("file") MultipartFile file,

@@ -17,7 +17,7 @@ class JwtServiceTest {
 
     private static JwtService service(String secret, long minutes) {
         return new JwtService(new RentivoProperties(
-                new RentivoProperties.Jwt(secret, minutes, "rentivo"), null, null, null, null, null));
+                new RentivoProperties.Jwt(secret, minutes, "rentivo"), null, null, null, null, null, null));
     }
 
     private static User user() {

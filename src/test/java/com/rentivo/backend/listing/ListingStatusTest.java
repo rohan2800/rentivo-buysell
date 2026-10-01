@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.rentivo.backend.listing.ListingStatus.APPROVED;
 import static com.rentivo.backend.listing.ListingStatus.DELETED;
+import static com.rentivo.backend.listing.ListingStatus.EXPIRED;
 import static com.rentivo.backend.listing.ListingStatus.PENDING;
 import static com.rentivo.backend.listing.ListingStatus.REJECTED;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,5 +34,18 @@ class ListingStatusTest {
     @Test
     void rejectedCanBeApprovedOnAppeal() {
         assertTrue(REJECTED.canTransitionTo(APPROVED));
+    }
+
+    @Test
+    void approvedCanExpire() {
+        assertTrue(APPROVED.canTransitionTo(EXPIRED));
+    }
+
+    @Test
+    void expiredCanOnlyBeRenewedOrDeleted() {
+        assertTrue(EXPIRED.canTransitionTo(APPROVED));
+        assertTrue(EXPIRED.canTransitionTo(DELETED));
+        assertFalse(EXPIRED.canTransitionTo(PENDING));
+        assertFalse(EXPIRED.canTransitionTo(REJECTED));
     }
 }

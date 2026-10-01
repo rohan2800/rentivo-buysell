@@ -76,7 +76,7 @@ one is active, so switching later is a config change, not a rewrite.
 |---|---|
 | Auth | `POST /api/auth/send-otp`, `POST /api/auth/verify-otp` |
 | Public | `GET /api/categories`, `GET /api/categories/{id}`, `GET /api/subscriptions/plans`, `GET /api/listings/approved` (paged, filters: `categoryId, city, type, minPrice, maxPrice, q, page, size`), `GET /api/listings/{id}` |
-| Owner | `POST /api/listings`, `GET /api/listings/mine`, `PUT/DELETE /api/listings/{id}`, `POST /api/listings/{id}/images`, `DELETE /api/listings/{id}/images/{imageId}` |
+| Owner | `POST /api/listings`, `GET /api/listings/mine`, `PUT/DELETE /api/listings/{id}`, `POST /api/listings/{id}/renew`, `POST /api/listings/{id}/images`, `DELETE /api/listings/{id}/images/{imageId}` |
 | Subscriber | `GET /api/subscriptions/status`, `POST /api/subscriptions/contact/{listingId}` |
 | Favorites | `GET /api/favorites` (paged), `POST /api/favorites/{listingId}`, `DELETE /api/favorites/{listingId}` |
 | Notifications | `GET /api/notifications` (paged), `GET /api/notifications/unread-count`, `PATCH /api/notifications/{id}/read`, `POST /api/notifications/read-all` |
