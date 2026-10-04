@@ -53,6 +53,11 @@ public class FavoriteService {
     }
 
     @Transactional(readOnly = true)
+    public boolean isFavorited(Long userId, Long listingId) {
+        return favorites.existsByUserIdAndListingId(userId, listingId);
+    }
+
+    @Transactional(readOnly = true)
     public PageResponse<ListingSummary> mine(Long userId, int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         return PageResponse.of(favorites.findByUserIdOrderByCreatedAtDesc(userId, Paging.of(page, size, sort)),

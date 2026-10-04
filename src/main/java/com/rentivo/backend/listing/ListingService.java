@@ -162,6 +162,31 @@ public class ListingService {
         });
     }
 
+    /**
+     * Applies a new display order. imageIds must be exactly the listing's current image ids,
+     * each once — this is a full reordering, not a partial move, so there is no ambiguity about
+     * where an id not mentioned would end up.
+     */
+    @Transactional
+    public void reorderImages(Long userId, Long listingId, List<Long> imageIds) {
+        Listing l = owned(userId, listingId);
+        Set<Long> current = new HashSet<>();
+        for (ListingImage img : l.getImages()) {
+            current.add(img.getId());
+        }
+        if (imageIds.size() != current.size() || !current.containsAll(imageIds)
+                || new HashSet<>(imageIds).size() != imageIds.size()) {
+            throw new BadRequestException("imageIds must list every current image exactly once");
+        }
+        Map<Long, Integer> order = new HashMap<>();
+        for (int i = 0; i < imageIds.size(); i++) {
+            order.put(imageIds.get(i), i);
+        }
+        for (ListingImage img : l.getImages()) {
+            img.setSortOrder(order.get(img.getId()));
+        }
+    }
+
     // ---- public browsing ----
 
     @Transactional(readOnly = true)

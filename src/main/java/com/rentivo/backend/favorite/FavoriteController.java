@@ -31,6 +31,14 @@ public class FavoriteController {
         return service.mine(user.id(), page, size);
     }
 
+    public record FavoriteStatus(boolean favorited) {
+    }
+
+    @GetMapping("/{listingId}")
+    public FavoriteStatus status(@PathVariable Long listingId, @AuthenticationPrincipal AuthUser user) {
+        return new FavoriteStatus(service.isFavorited(user.id(), listingId));
+    }
+
     @PostMapping("/{listingId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void add(@PathVariable Long listingId, @AuthenticationPrincipal AuthUser user) {

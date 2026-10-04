@@ -5,6 +5,7 @@ import com.rentivo.backend.listing.ListingType;
 import com.rentivo.backend.listing.PriceUnit;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -78,5 +79,8 @@ public final class ListingDtos {
     }
 
     public record ListingDecisionRequest(@NotNull ListingStatus status, @Size(max = 500) String reason) {
+    }
+
+    public record ImageOrderRequest(@NotEmpty List<Long> imageIds) {
     }
 }

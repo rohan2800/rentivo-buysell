@@ -2,6 +2,7 @@ package com.rentivo.backend.listing;
 
 import com.rentivo.backend.common.web.PageResponse;
 import com.rentivo.backend.listing.dto.ListingDtos.CreateListingRequest;
+import com.rentivo.backend.listing.dto.ListingDtos.ImageOrderRequest;
 import com.rentivo.backend.listing.dto.ListingDtos.ImageResponse;
 import com.rentivo.backend.listing.dto.ListingDtos.ListingFilter;
 import com.rentivo.backend.listing.dto.ListingDtos.ListingResponse;
@@ -99,5 +100,12 @@ public class ListingController {
     public void removeImage(@PathVariable Long id, @PathVariable Long imageId,
                             @AuthenticationPrincipal AuthUser user) {
         service.removeImage(user.id(), id, imageId);
+    }
+
+    @PutMapping("/{id}/images/order")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void reorderImages(@PathVariable Long id, @Valid @RequestBody ImageOrderRequest request,
+                              @AuthenticationPrincipal AuthUser user) {
+        service.reorderImages(user.id(), id, request.imageIds());
     }
 }
