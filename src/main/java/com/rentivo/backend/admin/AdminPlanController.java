@@ -1,11 +1,14 @@
 package com.rentivo.backend.admin;
 
+import com.rentivo.backend.audit.AdminAuditService;
+import com.rentivo.backend.security.AuthUser;
 import com.rentivo.backend.subscription.SubscriptionPlanAdminService;
 import com.rentivo.backend.subscription.dto.SubscriptionDtos.PlanRequest;
 import com.rentivo.backend.subscription.dto.SubscriptionDtos.PlanResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,9 +28,11 @@ import java.util.List;
 public class AdminPlanController {
 
     private final SubscriptionPlanAdminService service;
+    private final AdminAuditService audit;
 
-    public AdminPlanController(SubscriptionPlanAdminService service) {
+    public AdminPlanController(SubscriptionPlanAdminService service, AdminAuditService audit) {
         this.service = service;
+        this.audit = audit;
     }
 
     @GetMapping
@@ -37,17 +42,25 @@ public class AdminPlanController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PlanResponse create(@Valid @RequestBody PlanRequest request) {
-        return service.create(request);
+    public PlanResponse create(@Valid @RequestBody PlanRequest request, @AuthenticationPrincipal AuthUser admin) {
+        PlanResponse result = service.create(request);
+        audit.record(admin, "PLAN_CREATED", "PLAN", result.id(), result.name());
+        return result;
     }
 
     @PutMapping("/{id}")
-    public PlanResponse update(@PathVariable Long id, @Valid @RequestBody PlanRequest request) {
-        return service.update(id, request);
+    public PlanResponse update(@PathVariable Long id, @Valid @RequestBody PlanRequest request,
+                               @AuthenticationPrincipal AuthUser admin) {
+        PlanResponse result = service.update(id, request);
+        audit.record(admin, "PLAN_UPDATED", "PLAN", id, result.name());
+        return result;
     }
 
     @PatchMapping("/{id}/active")
-    public PlanResponse setActive(@PathVariable Long id, @RequestParam boolean value) {
-        return service.setActive(id, value);
+    public PlanResponse setActive(@PathVariable Long id, @RequestParam boolean value,
+                                  @AuthenticationPrincipal AuthUser admin) {
+        PlanResponse result = service.setActive(id, value);
+        audit.record(admin, value ? "PLAN_ACTIVATED" : "PLAN_DEACTIVATED", "PLAN", id, result.name());
+        return result;
     }
 }

@@ -52,6 +52,7 @@ com.rentivo.backend
   media/         image validation + storage abstraction (Postgres, local disk, or S3)
   security/      JWT filter, security rules, JSON 401/403
   admin/         /api/admin/** controllers
+  audit/         admin action audit log (who did what, when)
   common/        errors (RFC 7807), paging, phone utils
   config/        typed properties, startup safety checks
 ```
@@ -86,9 +87,25 @@ one is active, so switching later is a config change, not a rewrite.
 | Subscriber | `GET /api/subscriptions/status`, `POST /api/subscriptions/contact/{listingId}` |
 | Favorites | `GET /api/favorites` (paged), `GET /api/favorites/{listingId}` (status), `POST /api/favorites/{listingId}`, `DELETE /api/favorites/{listingId}` |
 | Notifications | `GET /api/notifications` (paged), `GET /api/notifications/unread-count`, `PATCH /api/notifications/{id}/read`, `POST /api/notifications/read-all` |
-| Admin | `/api/admin/dashboard`, `/api/admin/users`, `/api/admin/listings`, `/api/admin/categories`, `/api/admin/subscriptions/plans` |
+| Admin | `/api/admin/dashboard`, `/api/admin/users`, `/api/admin/listings`, `/api/admin/categories`, `/api/admin/subscriptions/plans`, `GET /api/admin/audit-log` (paged) |
 
 Errors are `application/problem+json`. Validation errors include an `errors` map.
+
+## Security notes
+
+- JWT auth, OTP hashed + rate-limited (attempts, cooldown, hourly cap), bcrypt, CORS allow-list,
+  RFC 7807 error bodies that never leak stack traces — all from Phase 1.
+- Response headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, HSTS (1 year,
+  includes subdomains — only takes effect once actually served over HTTPS, normally terminated
+  at a load balancer/reverse proxy in front of the app), `Referrer-Policy:
+  strict-origin-when-cross-origin`.
+- Every admin action (approve/reject a listing, block/unblock a user, create/edit/toggle a
+  category or plan) is recorded to `admin_audit_log` with who did it and when, readable at
+  `GET /api/admin/audit-log`.
+- Not done yet: refresh tokens (the JWT is long-lived, 24h by default), rate limiting on
+  endpoints other than OTP, and a dependency vulnerability scan (needs a Maven Central
+  connection this environment doesn't have — run `./mvnw org.owasp:dependency-check-maven:check`
+  yourself before a real production launch).
 
 ## Roadmap
 

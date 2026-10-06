@@ -1,5 +1,6 @@
 package com.rentivo.backend.admin;
 
+import com.rentivo.backend.audit.AdminAuditService;
 import com.rentivo.backend.common.web.PageResponse;
 import com.rentivo.backend.security.AuthUser;
 import com.rentivo.backend.user.UserAdminService;
@@ -19,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminUserController {
 
     private final UserAdminService service;
+    private final AdminAuditService audit;
 
-    public AdminUserController(UserAdminService service) {
+    public AdminUserController(UserAdminService service, AdminAuditService audit) {
         this.service = service;
+        this.audit = audit;
     }
 
     @GetMapping
@@ -33,6 +36,8 @@ public class AdminUserController {
     @PatchMapping("/{id}/active")
     public UserView setActive(@PathVariable Long id, @RequestParam boolean value,
                               @AuthenticationPrincipal AuthUser admin) {
-        return service.setActive(admin.id(), id, value);
+        UserView result = service.setActive(admin.id(), id, value);
+        audit.record(admin, value ? "USER_UNBLOCKED" : "USER_BLOCKED", "USER", id, null);
+        return result;
     }
 }
