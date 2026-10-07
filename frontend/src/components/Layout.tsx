@@ -18,6 +18,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const links = NAV_LINKS.filter((l) => !l.authOnly || isAuthenticated)
+  const isAdmin = user?.role === 'ADMIN'
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -35,6 +36,11 @@ export function Layout({ children }: { children: ReactNode }) {
               </Link>
             ))}
             {isAuthenticated && <NotificationBell />}
+            {isAdmin && (
+              <Link to="/admin" className="text-sm font-medium text-brick">
+                Admin
+              </Link>
+            )}
           </nav>
 
           <div className="hidden items-center gap-3 md:flex">
@@ -93,6 +99,15 @@ export function Layout({ children }: { children: ReactNode }) {
                 className="py-2 text-sm font-medium text-steel"
               >
                 Notifications
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                onClick={() => setMenuOpen(false)}
+                className="py-2 text-sm font-medium text-brick"
+              >
+                Admin
               </Link>
             )}
             {isAuthenticated ? (

@@ -1,15 +1,21 @@
 import { reportReachable, reportUnreachable } from './connectivity'
 import type {
+  AdminDashboard,
+  AdminUser,
   AppNotification,
+  AuditLogEntry,
   AuthResponse,
   Category,
+  CategoryRequest,
   ContactResponse,
   CreateListingRequest,
   FavoriteStatus,
   ImageResponse,
   ListingFilter,
+  ListingStatus,
   OwnedListing,
   PageResponse,
+  PlanRequest,
   PublicListing,
   SendOtpResponse,
   SubscriptionPlan,
@@ -155,5 +161,53 @@ export const api = {
     markRead: (id: number) =>
       request<AppNotification>(`/api/notifications/${id}/read`, { method: 'PATCH' }),
     markAllRead: () => request<void>('/api/notifications/read-all', { method: 'POST' }),
+  },
+
+  admin: {
+    dashboard: () => request<AdminDashboard>('/api/admin/dashboard'),
+
+    users: {
+      list: (page = 0, size = 20) =>
+        request<PageResponse<AdminUser>>(`/api/admin/users${query({ page, size })}`),
+      setActive: (id: number, value: boolean) =>
+        request<AdminUser>(`/api/admin/users/${id}/active${query({ value })}`, { method: 'PATCH' }),
+    },
+
+    listings: {
+      list: (status: ListingStatus | undefined, page = 0, size = 20) =>
+        request<PageResponse<OwnedListing>>(`/api/admin/listings${query({ status, page, size })}`),
+      decide: (id: number, status: 'APPROVED' | 'REJECTED', reason?: string) =>
+        request<OwnedListing>(`/api/admin/listings/${id}/status`, {
+          method: 'PATCH',
+          body: { status, reason },
+        }),
+    },
+
+    categories: {
+      list: () => request<Category[]>('/api/admin/categories'),
+      create: (body: CategoryRequest) =>
+        request<Category>('/api/admin/categories', { method: 'POST', body }),
+      update: (id: number, body: CategoryRequest) =>
+        request<Category>(`/api/admin/categories/${id}`, { method: 'PUT', body }),
+      setActive: (id: number, value: boolean) =>
+        request<Category>(`/api/admin/categories/${id}/active${query({ value })}`, { method: 'PATCH' }),
+    },
+
+    plans: {
+      list: () => request<SubscriptionPlan[]>('/api/admin/subscriptions/plans'),
+      create: (body: PlanRequest) =>
+        request<SubscriptionPlan>('/api/admin/subscriptions/plans', { method: 'POST', body }),
+      update: (id: number, body: PlanRequest) =>
+        request<SubscriptionPlan>(`/api/admin/subscriptions/plans/${id}`, { method: 'PUT', body }),
+      setActive: (id: number, value: boolean) =>
+        request<SubscriptionPlan>(`/api/admin/subscriptions/plans/${id}/active${query({ value })}`, {
+          method: 'PATCH',
+        }),
+    },
+
+    auditLog: {
+      list: (page = 0, size = 20) =>
+        request<PageResponse<AuditLogEntry>>(`/api/admin/audit-log${query({ page, size })}`),
+    },
   },
 }

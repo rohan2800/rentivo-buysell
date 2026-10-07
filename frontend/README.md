@@ -54,6 +54,10 @@ src/
 - Plans: view plans and current subscription status; activation calls the backend's dev-only
   `activate-dev` endpoint and shows a friendly message if that's disabled (real payments aren't
   built yet — see the backend's Phase 2 roadmap)
+- **Admin panel** (`/admin/*`, only visible/reachable with an `ADMIN`-role account):
+  dashboard stats, listing moderation (approve/reject with a required reason), user
+  block/unblock, category management (including the dynamic field editor), subscription plan
+  management, and a read-only audit log of every admin action
 
 ## Known gaps (next steps)
 

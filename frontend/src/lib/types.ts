@@ -196,6 +196,66 @@ export interface FavoriteStatus {
   favorited: boolean
 }
 
+export interface FieldRequest {
+  id?: number
+  name: string
+  type: FieldType
+  required: boolean
+  optionsCsv?: string
+  sortOrder?: number
+}
+
+export interface CategoryRequest {
+  name: string
+  active?: boolean
+  fields?: FieldRequest[]
+}
+
+// ---- admin ----
+
+export interface AdminUser {
+  id: number
+  name: string
+  phone: string
+  role: Role
+  active: boolean
+  phoneVerified: boolean
+  createdAt: string
+}
+
+export interface AdminDashboard {
+  totalUsers: number
+  activeUsers: number
+  totalListings: number
+  pendingListings: number
+  approvedListings: number
+  rejectedListings: number
+  subscriptionPlans: number
+  activeSubscriptions: number
+  successfulPayments: number
+  revenue: number
+}
+
+export interface PlanRequest {
+  name: string
+  price: number
+  validityDays: number
+  contactLimit: number
+  description?: string
+  active?: boolean
+}
+
+export interface AuditLogEntry {
+  id: number
+  adminId: number
+  adminPhone: string
+  action: string
+  targetType: string
+  targetId: number | null
+  detail: string | null
+  createdAt: string
+}
+
 export interface ListingFilter {
   categoryId?: number
   city?: string

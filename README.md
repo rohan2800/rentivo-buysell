@@ -7,8 +7,10 @@ seller's phone number needs a paid subscription. Business rules: see
 This repo holds both halves of the project:
 - **Backend** (this folder, root level) — Java 21, Spring Boot 4.1, PostgreSQL 16, Flyway,
   Spring Security (JWT), Maven. Covered by the rest of this README.
-- **[`frontend/`](frontend/README.md)** — the React web app. See its own README for setup;
-  it's a separate `npm` project living in its own subfolder, with its own `.gitignore`.
+- **[`frontend/`](frontend/README.md)** — the React web app, including a full admin panel at
+  `/admin/*` (dashboard, listing moderation, users, categories, plans, audit log). See its own
+  README for setup; it's a separate `npm` project living in its own subfolder, with its own
+  `.gitignore`.
 
 **Backend stack:** Java 21, Spring Boot 4.1, PostgreSQL 16, Flyway, Spring Security (JWT), Maven.
 
